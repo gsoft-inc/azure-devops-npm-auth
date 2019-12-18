@@ -106,3 +106,5 @@ dist
 # Don't need npmrc for this project
 .npmrc
 
+# macos 🤷‍♂️
+.DS_Store

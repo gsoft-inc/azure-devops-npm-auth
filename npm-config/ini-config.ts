@@ -1,8 +1,13 @@
-const fs = require("fs");
-const ini = require("ini");
+import * as fs from "fs";
+import * as ini from "ini";
 
 class IniConfig {
-    constructor(filePath, createIfNotExists = false) {
+
+    filePath: string;
+    
+    config: { [key: string]: string };
+    
+    constructor(filePath: string, createIfNotExists = false) {
         if (!fs.existsSync(filePath)) {
             if (createIfNotExists) {
                 fs.writeFileSync(filePath, {});
@@ -16,13 +21,13 @@ class IniConfig {
         this.load();
     }
 
-    get = (key) => this.config[key];
+    get = (key: string) => this.config[key];
 
-    set = (key, value) => this.config[key] = value;
+    set = (key: string, value: string) => this.config[key] = value;
 
     save = () => fs.writeFileSync(this.filePath, ini.encode(this.config));
 
     load = () => this.config = ini.parse(fs.readFileSync(this.filePath, "utf8"));
 }
 
-module.exports = IniConfig;
+export default IniConfig;

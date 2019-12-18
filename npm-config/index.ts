@@ -1,10 +1,10 @@
-const url = require("url");
-const path = require("path");
-const IniConfig = require("./ini-config");
-const { execSync } = require("child_process");
+import * as url from "url";
+import * as path from "path";
+import IniConfig from "./ini-config";
+import { execSync } from "child_process";
 
 class NpmConfig extends IniConfig {
-  constructor(basePath, createIfNotExists = false) {
+  constructor(basePath: string, createIfNotExists = false) {
     if (!basePath) {
       throw new Error("No base path defined for .npmrc file.");
     }
@@ -20,14 +20,14 @@ class NpmConfig extends IniConfig {
     return this.get("registry");
   }
 
-  getRegistryRefreshToken(registry) {
+  getRegistryRefreshToken(registry: string) {
     const registryUrl = url.parse(registry);
     return this.get(
       `//${registryUrl.hostname}${registryUrl.pathname}:_refreshToken`
     );
   }
 
-  setRegistryAuthToken(registry, token) {
+  setRegistryAuthToken(registry: string, token: string) {
     const registryUrl = url.parse(registry);
     this.set(
       `//${registryUrl.hostname}${registryUrl.pathname}:_authToken`,
@@ -36,7 +36,7 @@ class NpmConfig extends IniConfig {
     this.save();
   }
 
-  setRegistryRefreshToken(registry, token) {
+  setRegistryRefreshToken(registry: string, token: string) {
     const registryUrl = url.parse(registry);
     this.set(
       `//${registryUrl.hostname}${registryUrl.pathname}:_refreshToken`,
@@ -48,20 +48,22 @@ class NpmConfig extends IniConfig {
 
 class UserNpmConfig extends NpmConfig {
   constructor(createIfNotExists = true) {
-    const filePath = execSync("npm config get userconfig").toString().trim();
+    const filePath = execSync("npm config get userconfig")
+      .toString()
+      .trim();
     super(filePath, createIfNotExists);
   }
 }
 
 class ProjectNpmConfig extends NpmConfig {
   constructor() {
-    const filePath = path.join(process.cwd(), '.npmrc');
+    const filePath = path.join(process.cwd(), ".npmrc");
     super(filePath);
   }
 }
 
-module.exports = { 
+export {
   NpmConfig,
   UserNpmConfig,
   ProjectNpmConfig
- };
+};
