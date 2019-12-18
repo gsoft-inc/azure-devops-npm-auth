@@ -1,0 +1,19 @@
+{
+  "name": "az-devops-npm-auth",
+  "version": "1.0.0",
+  "description": "Authentication utility for private NPM registries hosted in Azure DevOps.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yohan Belval",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "ini": "^1.3.5",
+    "jwt-decode": "^2.2.0",
+    "minimist": "^1.2.0",
+    "openid-client": "^3.9.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5"
+  }
+}
