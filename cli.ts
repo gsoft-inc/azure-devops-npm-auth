@@ -1,4 +1,4 @@
-const { run } = require("./index");
+import { run } from "./index";
 
 // Multi-tenant AAD application hosted on private tenant.
 // Possible to substitute with your own if needed and specify the tenant id of your organization.
