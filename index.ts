@@ -4,13 +4,15 @@ import { Client } from "openid-client";
 import { UserNpmConfig, ProjectNpmConfig } from "./npm-config";
 
 const AZDEVOPS_RESOURCE_ID = "499b84ac-1321-427f-aa17-267ca6975798";
+const AZDEVOPS_AUTH_CLIENT_ID = "f9d5fef7-a410-4582-bb27-68a319b1e5a1";
+const AZDEVOPS_AUTH_TENANT_ID = "common";
 
 const userNpmConfig = new UserNpmConfig();
 const projectNpmConfig = new ProjectNpmConfig();
 
-async function run(clientId: string, tenantId: string) {
+async function run(clientId = AZDEVOPS_AUTH_CLIENT_ID, tenantId = AZDEVOPS_AUTH_TENANT_ID) {
   const registry = getRegistry();
-  console.log(chalk.green(`found registry ${registry}.`));
+  console.log(chalk.green(`found registry ${registry}`));
 
   const issuer = await MsoIssuer.discover(tenantId);
   const client = new issuer.Client(new MsoDeviceCodeClientMedata(clientId));
@@ -44,7 +46,7 @@ async function run(clientId: string, tenantId: string) {
   userNpmConfig.setRegistryRefreshToken(registry, tokenSet.refresh_token);
 
   console.log(
-    chalk.green(`Done! You can now install packages from ${registry}.`)
+    chalk.green(`Done! You can now install packages from ${registry} \n`)
   );
 }
 
