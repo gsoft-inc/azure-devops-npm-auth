@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { run } from "./index";
 
 const args = require("minimist")(process.argv.slice(2), {
