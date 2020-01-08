@@ -12,17 +12,19 @@ The **azure-devops-npm-auth** solves all these problems mainly by using the [OAu
 
 ## Installation 💪
 
-Simply run `npm i azure-devops-npm-auth --save-dev`.  Then add a pre-installation script to your `package.json` file like so:
+Simply run `npm i azure-devops-npm-auth --save-dev`.
+
+## Usage 🤷‍♂️
+
+First, add a pre-installation script to your `package.json` file like so:
 ```javascript
   "scripts": {
-    "preinstall": "node -e \"require('azure-devops-npm-auth').run()\""
+    "preinstall": "azure-devops-npm-auth"
     ...
   },
 ```
 
-## Usage 🤷‍♂️
-
-Setup the project repository in the `.npmrc` file as documented in the Azure DevOps npm feed connection page:
+Then, setup the project repository in the `.npmrc` file as documented in the Azure DevOps npm feed connection page:
 
 ![az devops npm feed connection](https://i.imgur.com/M04u3i5.png)
 
