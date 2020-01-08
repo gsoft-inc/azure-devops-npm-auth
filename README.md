@@ -1,12 +1,12 @@
 # azure-devops-npm-auth
 
-Uses the OAuth2 device code flow to authenticate against the Azure DevOps artifact private registry.
+Uses the [OAuth 2 device code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) to authenticate against the Azure DevOps artifact private registry.
 
 ## Why? 🤔
 
 Microsoft provides the [vsts-npm-auth](https://www.npmjs.com/package/vsts-npm-auth) package for this task but sadly, it's not cross-platform and doesn't automatically handle token refresh.
 
-There's also [better-vsts-npm-auth](https://www.npmjs.com/package/better-vsts-npm-auth) which solves these issues but requires manual setups (not ideal for a dev team) and authentication through a web app, which in my opinion isn't the best flow to use in the command line.
+There's also [better-vsts-npm-auth](https://www.npmjs.com/package/better-vsts-npm-auth) which solves these issues but requires manual setup (not ideal for a dev team) and authentication through a web app, which in my opinion isn't the best flow to use in the command line.
 
 The **azure-devops-npm-auth** solves all these problems mainly by using the [OAuth 2 device code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).  Once authenticated, access and refresh tokens are then stored in the user's personal .npmrc file, keeping them secure and out of any code repository.
 
@@ -35,6 +35,28 @@ When installing packages using `npm i`, the preinstallation script will be execu
 Follow the instructions to login and authenticate npm to the Azure DevOps private feed.  The following installation should be able to use the **refresh token** and automate the task of authenticating:
 
 ![az devops device code refresh](https://i.imgur.com/oC3YGHm.png)
+
+
+## Advanced Usage 🧙‍♂️
+
+If you want to use your own Azure Active Directory application, it's possible to specify the `client_id` and `tenant_id` arguments:
+
+```javascript
+  "scripts": {
+    "preinstall": "azure-devops-npm-auth --client_id='xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' --tenant_id='xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'"
+    ...
+  },
+```
+
+*Note: If your Azure Active Directory application is configured to be multitenant, `tenant_id` can also be `common` (is the default; Work and school accounts or personal Microsoft accounts), `consumers` (personal Microsoft accounts) or `organizations` (work and school accounts)*.
+
+When creating your own Azure Active Direction application, under the authentication section, you need the configure it to be a public application:
+
+![aad public app](https://i.imgur.com/VeL9cGe.png)
+
+You also need to add the required API permissions to have '`Azure DevOps user_impersonation`' and '`Microsoft Graph User.Read`':
+
+![aad api permissions](https://imgur.com/aVd51d0.png)
 
 
 ## Special Thanks 👏
