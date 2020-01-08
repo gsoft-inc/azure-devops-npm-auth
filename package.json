@@ -12,7 +12,7 @@
     "dist"
   ],
   "bin": {
-    "better-vsts-npm-auth": "dist/cli.js"
+    "azure-devops-npm-auth": "dist/cli.js"
   },
   "author": "Yohan Belval",
   "repository": "https://github.com/gsoft-inc/azure-devops-npm-auth.git",
