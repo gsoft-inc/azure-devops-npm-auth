@@ -11,43 +11,44 @@ const userNpmConfig = new UserNpmConfig();
 const projectNpmConfig = new ProjectNpmConfig();
 
 async function run(clientId = AZDEVOPS_AUTH_CLIENT_ID, tenantId = AZDEVOPS_AUTH_TENANT_ID) {
-  const registry = getRegistry();
-  console.log(chalk.green(`found registry ${registry}`));
+  for(const registry of getRegistries()){
+    console.log(chalk.green(`found registry ${registry}`));
 
-  const issuer = await MsoIssuer.discover(tenantId);
-  const client = new issuer.Client(new MsoDeviceCodeClientMedata(clientId));
+    const issuer = await MsoIssuer.discover(tenantId);
+    const client = new issuer.Client(new MsoDeviceCodeClientMedata(clientId));
 
-  let tokenSet;
-  const refreshToken = userNpmConfig.getRegistryRefreshToken(registry);
-  if (refreshToken) {
-    try {
-      console.log("Trying to use refresh token...");
-      tokenSet = await client.refresh(refreshToken);
-    } catch (exception) {
-      switch (exception.error) {
-        case "invalid_grant":
-          console.log(chalk.yellow("Refresh token is invalid or expired."));
-          tokenSet = await startDeviceCodeFlow(client);
-          break;
-        case "interaction_required":
-          console.log(chalk.yellow("Interaction required."));
-          tokenSet = await startDeviceCodeFlow(client);
-          break;
-        default:
-          throw exception;
+    let tokenSet;
+    const refreshToken = userNpmConfig.getRegistryRefreshToken(registry);
+    if (refreshToken) {
+      try {
+        console.log("Trying to use refresh token...");
+        tokenSet = await client.refresh(refreshToken);
+      } catch (exception) {
+        switch (exception.error) {
+          case "invalid_grant":
+            console.log(chalk.yellow("Refresh token is invalid or expired."));
+            tokenSet = await startDeviceCodeFlow(client);
+            break;
+          case "interaction_required":
+            console.log(chalk.yellow("Interaction required."));
+            tokenSet = await startDeviceCodeFlow(client);
+            break;
+          default:
+            throw exception;
+        }
       }
+    } else {
+      tokenSet = await startDeviceCodeFlow(client);
     }
-  } else {
-    tokenSet = await startDeviceCodeFlow(client);
-  }
 
-  // Update user npm config with tokens
-  userNpmConfig.setRegistryAuthToken(registry, tokenSet.access_token);
-  userNpmConfig.setRegistryRefreshToken(registry, tokenSet.refresh_token);
+    // Update user npm config with tokens
+    userNpmConfig.setRegistryAuthToken(registry, tokenSet.access_token);
+    userNpmConfig.setRegistryRefreshToken(registry, tokenSet.refresh_token);
 
-  console.log(
-    chalk.green(`Done! You can now install packages from ${registry} \n`)
-  );
+    console.log(
+      chalk.green(`Done! You can now install packages from ${registry} \n`)
+    );
+  };
 }
 
 async function startDeviceCodeFlow(client: Client) {
@@ -64,17 +65,21 @@ async function startDeviceCodeFlow(client: Client) {
   return await handle.poll();
 }
 
-function getRegistry() {
-  // Registry should be set on project level but fallback to user defined.`
-  const registry =
-    projectNpmConfig.getRegistry() || userNpmConfig.getRegistry();
-  if (!registry) {
+function getRegistries() {
+  // Registries should be set on project level but fallback to user defined.`
+  const projectRegistries = projectNpmConfig.getRegistries();
+  const userRegistries = userNpmConfig.getRegistries();
+  const registries = (projectRegistries.length !== 0 ? projectRegistries : userRegistries)
+    // return unique list of registries
+    .filter((key, index, keys) => index === keys.indexOf(key));
+
+  if (registries.length === 0) {
     throw new Error(
       "No private registry defined in project .npmrc or user defined .npmrc."
     );
   }
 
-  return registry;
+  return registries;
 };
 
 export { run }

@@ -16,9 +16,11 @@ class NpmConfig extends IniConfig {
     super(basePath, createIfNotExists);
   }
 
-  getRegistry() {
-    return this.get("registry");
-  }
+  getRegistries() {
+    return Object.keys(this.config)
+        .filter(key => key.includes("registry"))
+        .map(key => this.get(key))
+  };  
 
   getRegistryRefreshToken(registry: string) {
     const registryUrl = url.parse(registry);
