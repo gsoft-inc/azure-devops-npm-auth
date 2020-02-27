@@ -7,11 +7,37 @@ const AZDEVOPS_RESOURCE_ID = "499b84ac-1321-427f-aa17-267ca6975798";
 const AZDEVOPS_AUTH_CLIENT_ID = "f9d5fef7-a410-4582-bb27-68a319b1e5a1";
 const AZDEVOPS_AUTH_TENANT_ID = "common";
 
+const CI_DEFAULT_ENV_VARIABLE_NAME = "TF_BUILD";
+
 const userNpmConfig = new UserNpmConfig();
 const projectNpmConfig = new ProjectNpmConfig();
 
-async function run(clientId = AZDEVOPS_AUTH_CLIENT_ID, tenantId = AZDEVOPS_AUTH_TENANT_ID) {
-  for(const registry of getRegistries()){
+export function inCI(ciInfo: boolean | string) {
+  if (!ciInfo) {
+    return false;
+  }
+
+  const variableName =
+    typeof ciInfo === "string" ? ciInfo : CI_DEFAULT_ENV_VARIABLE_NAME;
+
+  if (!process.env[variableName]) {
+    return false;
+  }
+
+  console.log("Skipped auth due to running in CI environment");
+  return true;
+}
+
+async function run(
+  clientId = AZDEVOPS_AUTH_CLIENT_ID,
+  tenantId = AZDEVOPS_AUTH_TENANT_ID,
+  ciInfo: boolean | string
+) {
+  if (inCI(ciInfo)) {
+    return;
+  }
+
+  for (const registry of getRegistries()) {
     console.log(chalk.green(`found registry ${registry}`));
 
     const issuer = await MsoIssuer.discover(tenantId);
@@ -48,7 +74,7 @@ async function run(clientId = AZDEVOPS_AUTH_CLIENT_ID, tenantId = AZDEVOPS_AUTH_
     console.log(
       chalk.green(`Done! You can now install packages from ${registry} \n`)
     );
-  };
+  }
 }
 
 async function startDeviceCodeFlow(client: Client) {
@@ -69,7 +95,10 @@ function getRegistries() {
   // Registries should be set on project level but fallback to user defined.`
   const projectRegistries = projectNpmConfig.getRegistries();
   const userRegistries = userNpmConfig.getRegistries();
-  const registries = (projectRegistries.length !== 0 ? projectRegistries : userRegistries)
+  const registries = (projectRegistries.length !== 0
+    ? projectRegistries
+    : userRegistries
+  )
     // return unique list of registries
     .filter((key, index, keys) => index === keys.indexOf(key));
 
@@ -80,6 +109,6 @@ function getRegistries() {
   }
 
   return registries;
-};
+}
 
-export { run }
+export { run };
