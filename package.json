@@ -2,7 +2,15 @@
   "name": "azure-devops-npm-auth",
   "version": "1.0.3",
   "description": "Authentication utility for private NPM registries hosted in Azure DevOps.",
-  "keywords": ["azure", "devops", "npm", "authentication", "artifact", "feed", "vsts-npm-auth"],
+  "keywords": [
+    "azure",
+    "devops",
+    "npm",
+    "authentication",
+    "artifact",
+    "feed",
+    "vsts-npm-auth"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -25,6 +33,7 @@
     "openid-client": "^3.9.1"
   },
   "devDependencies": {
-    "rimraf": "^3.0.0"
+    "rimraf": "^3.0.0",
+    "typescript": "^3.8.2"
   }
 }

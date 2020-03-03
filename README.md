@@ -58,6 +58,21 @@ You also need to add the required API permissions to have '`Azure DevOps user_im
 
 ![aad api permissions](https://imgur.com/aVd51d0.png)
 
+### Continuous integration
+To disable authentication within CI environments add the `--ci` flag which skips authentication when the `TF_BUILD` environment variable is set (which is automatically set in Azure DevOps build pipelines):
+```javascript
+  "scripts": {
+    "preinstall": "azure-devops-npm-auth --ci"
+    ...
+  },
+```
+It's also possible to specify a custom environment variable:
+```javascript
+  "scripts": {
+    "preinstall": "azure-devops-npm-auth --ci=MY_CUSTOM_VARIABLE"
+    ...
+  },
+```
 
 ## Special Thanks 👏
 
