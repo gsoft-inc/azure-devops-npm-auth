@@ -4,21 +4,20 @@ import * as ini from "ini";
 class IniConfig {
 
     filePath: string;
-    
-    config: { [key: string]: string };
-    
-    constructor(filePath: string, createIfNotExists = false) {
-        if (!fs.existsSync(filePath)) {
-            if (createIfNotExists) {
-                fs.writeFileSync(filePath, {});
-            } else {
-                throw new Error(`Configuration file at '${filePath}' doesn't exist.`)
-            }
-        }
 
+    config: { [key: string]: string };
+
+    constructor(filePath: string, createIfNotExists = false) {
         this.filePath = filePath;
         this.config = {};
-        this.load();
+
+        if (!fs.existsSync(filePath) && createIfNotExists) {
+            fs.writeFileSync(filePath, JSON.stringify({}));
+        }
+
+        if (fs.existsSync(filePath)) {
+            this.load();
+        }
     }
 
     get = (key: string) => this.config[key];

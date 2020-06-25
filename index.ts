@@ -92,7 +92,7 @@ async function startDeviceCodeFlow(client: Client) {
 }
 
 function getRegistries() {
-  // Registries should be set on project level but fallback to user defined.`
+  // Registries should be set on project level but fallback to user defined.
   const projectRegistries = projectNpmConfig.getRegistries();
   const userRegistries = userNpmConfig.getRegistries();
   const registries = (projectRegistries.length !== 0
