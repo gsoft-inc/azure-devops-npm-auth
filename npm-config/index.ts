@@ -58,8 +58,8 @@ class UserNpmConfig extends NpmConfig {
 }
 
 class ProjectNpmConfig extends NpmConfig {
-  constructor() {
-    const filePath = path.join(process.cwd(), ".npmrc");
+  constructor(basePath: string) {
+    const filePath = path.join(basePath, ".npmrc");
     super(filePath);
   }
 }

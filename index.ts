@@ -2,6 +2,7 @@ import * as chalk from "chalk";
 import { MsoIssuer, MsoDeviceCodeClientMedata } from "./authentication";
 import { Client } from "openid-client";
 import { UserNpmConfig, ProjectNpmConfig } from "./npm-config";
+import { resolve } from "path";
 
 const AZDEVOPS_RESOURCE_ID = "499b84ac-1321-427f-aa17-267ca6975798";
 const AZDEVOPS_AUTH_CLIENT_ID = "f9d5fef7-a410-4582-bb27-68a319b1e5a1";
@@ -10,7 +11,6 @@ const AZDEVOPS_AUTH_TENANT_ID = "common";
 const CI_DEFAULT_ENV_VARIABLE_NAME = "TF_BUILD";
 
 const userNpmConfig = new UserNpmConfig();
-const projectNpmConfig = new ProjectNpmConfig();
 
 export function inCI(ciInfo: boolean | string) {
   if (!ciInfo) {
@@ -31,13 +31,15 @@ export function inCI(ciInfo: boolean | string) {
 async function run(
   clientId = AZDEVOPS_AUTH_CLIENT_ID,
   tenantId = AZDEVOPS_AUTH_TENANT_ID,
-  ciInfo: boolean | string
+  ciInfo: boolean | string,
+  projectBasePath?: string
 ) {
   if (inCI(ciInfo)) {
     return;
   }
+  const resolvedProjectBasePath = projectBasePath ? resolve(projectBasePath) : process.cwd();
 
-  for (const registry of getRegistries()) {
+  for (const registry of getRegistries(resolvedProjectBasePath)) {
     console.log(chalk.green(`found registry ${registry}`));
 
     const issuer = await MsoIssuer.discover(tenantId);
@@ -91,9 +93,9 @@ async function startDeviceCodeFlow(client: Client) {
   return await handle.poll();
 }
 
-function getRegistries() {
+function getRegistries(projectBasePath: string) {
   // Registries should be set on project level but fallback to user defined.
-  const projectRegistries = projectNpmConfig.getRegistries();
+  const projectRegistries = new ProjectNpmConfig(projectBasePath).getRegistries();
   const userRegistries = userNpmConfig.getRegistries();
   const registries = (projectRegistries.length !== 0
     ? projectRegistries
