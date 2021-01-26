@@ -10,7 +10,7 @@ describe('user npm config', () => {
 
 describe('project npm config', () => {
     it('project npm file path not empty', () => {
-        var config = new ProjectNpmConfig();
+        var config = new ProjectNpmConfig(process.cwd());
         expect(config.filePath).to.not.be.empty;
     });
 });
