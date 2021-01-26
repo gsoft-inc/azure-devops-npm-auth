@@ -36,7 +36,6 @@ Follow the instructions to login and authenticate npm to the Azure DevOps privat
 
 ![az devops device code refresh](https://i.imgur.com/oC3YGHm.png)
 
-
 ## Advanced Usage 🧙‍♂️
 
 If you want to use your own Azure Active Directory application, it's possible to specify the `client_id` and `tenant_id` arguments:
@@ -59,6 +58,7 @@ You also need to add the required API permissions to have '`Azure DevOps user_im
 ![aad api permissions](https://imgur.com/aVd51d0.png)
 
 ### Continuous integration
+
 To disable authentication within CI environments add the `--ci` flag which skips authentication when the `TF_BUILD` environment variable is set (which is automatically set in Azure DevOps build pipelines):
 ```javascript
   "scripts": {
@@ -73,6 +73,19 @@ It's also possible to specify a custom environment variable:
     ...
   },
 ```
+
+### Project Base Path
+
+You can pass in a path to customize the directory to look in for the project's .npmrc file. The default value is the current working directory:
+
+```javascript
+  "scripts": {
+    "preinstall": "azure-devops-npm-auth --project_base_path=./configs"
+    ...
+  },
+```
+
+*Note: this is the path to the directory that contains the .npmrc file, meaning you do **not** need to specify the .npmrc in the path.*
 
 ## Special Thanks 👏
 
