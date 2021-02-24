@@ -1,6 +1,6 @@
 import * as chalk from "chalk";
 import { MsoIssuer, MsoDeviceCodeClientMedata } from "./authentication";
-import { Client } from "openid-client";
+import { custom, Client } from "openid-client";
 import { UserNpmConfig, ProjectNpmConfig } from "./npm-config";
 import { resolve } from "path";
 
@@ -44,6 +44,14 @@ async function run(
 
     const issuer = await MsoIssuer.discover(tenantId);
     const client = new issuer.Client(new MsoDeviceCodeClientMedata(clientId));
+
+    // Set timeout to 5s to workaround issue #18
+    // https://github.com/gsoft-inc/azure-devops-npm-auth/issues/18
+    client[custom.http_options] = function (options) {
+      console.log(options);
+      options.timeout = 5000;
+      return options;
+    }
 
     let tokenSet;
     const refreshToken = userNpmConfig.getRegistryRefreshToken(registry);

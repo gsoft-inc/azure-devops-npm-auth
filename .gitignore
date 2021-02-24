@@ -108,3 +108,6 @@ dist
 
 # macos 🤷‍♂️
 .DS_Store
+
+# Jetbrains
+.idea
