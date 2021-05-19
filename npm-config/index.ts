@@ -1,3 +1,4 @@
+import * as os from "os";
 import * as url from "url";
 import * as path from "path";
 import IniConfig from "./ini-config";
@@ -50,9 +51,16 @@ class NpmConfig extends IniConfig {
 
 class UserNpmConfig extends NpmConfig {
   constructor(createIfNotExists = true) {
-    const filePath = execSync("npm config get userconfig")
-      .toString()
-      .trim();
+    let filePath: string;
+    try{
+      filePath = execSync("npm config get userconfig", { stdio: ["pipe", "pipe", "ignore"] })
+        .toString()
+        .trim();
+    }
+    catch {
+      filePath = os.homedir();
+    }
+
     super(filePath, createIfNotExists);
   }
 }
