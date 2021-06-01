@@ -40,7 +40,7 @@ async function run(
   const resolvedProjectBasePath = projectBasePath ? resolve(projectBasePath) : process.cwd();
 
   for (const registry of getRegistries(resolvedProjectBasePath)) {
-    console.log(chalk.green(`found registry ${registry}`));
+    console.log(chalk.green(`Found registry ${registry}`));
 
     const issuer = await MsoIssuer.discover(tenantId);
     const client = new issuer.Client(new MsoDeviceCodeClientMedata(clientId));
@@ -87,7 +87,7 @@ async function run(
 }
 
 async function startDeviceCodeFlow(client: Client) {
-  console.log(chalk.green("launching device code authentication..."));
+  console.log(chalk.green("Launching device code authentication..."));
 
   // Make sure to include 'offline_access' scope to receive refresh token.
   const handle = await client.deviceAuthorization({
