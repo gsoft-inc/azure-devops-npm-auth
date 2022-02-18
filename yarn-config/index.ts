@@ -3,8 +3,10 @@ import * as url from "url";
 import * as path from "path";
 import YamlConfig, { YamlSettings } from "./yaml-config";
 import { execSync } from "child_process";
+import { NpmConfig } from "../npm-config";
 
 class YarnConfig extends YamlConfig {
+  private npmConfig: NpmConfig;
   constructor(basePath: string, createIfNotExists = false) {
     if (!basePath) {
       throw new Error("No base path defined for .yarnrc.yml file.");
@@ -15,6 +17,7 @@ class YarnConfig extends YamlConfig {
     }
 
     super(basePath, createIfNotExists);
+    this.npmConfig = new NpmConfig(basePath, createIfNotExists);
   }
 
   getRegistries() {
@@ -39,11 +42,8 @@ class YarnConfig extends YamlConfig {
     return registries;
   }
 
-  getRegistryRefreshToken(_registry: string): string {
-    // Return undefined because the Yarn 2+ Yaml definition doesn't support
-    // a place to store refresh tokens. Maybe there is a way to add this where
-    // Yarn won't complain, but not currently sure how.
-    return undefined;
+  getRegistryRefreshToken(registry: string) {
+    return this.npmConfig.getRegistryRefreshToken(registry);
   }
 
   setRegistryAuthToken(registry: string, token: string) {
@@ -58,11 +58,8 @@ class YarnConfig extends YamlConfig {
     this.save();
   }
 
-  setRegistryRefreshToken(_registry: string, _token: string) {
-    // Return void because the Yarn 2+ Yaml definition doesn't support
-    // a place to store refresh tokens. Maybe there is a way to add this where
-    // Yarn won't complain, but not currently sure how.
-    return;
+  setRegistryRefreshToken(registry: string, token: string) {
+    return this.npmConfig.setRegistryRefreshToken(registry, token);
   }
 }
 
