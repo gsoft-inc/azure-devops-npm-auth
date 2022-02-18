@@ -12,12 +12,18 @@ class YarnConfig extends YamlConfig {
       throw new Error("No base path defined for .yarnrc.yml file.");
     }
 
-    if (!basePath.endsWith(".yarnrc.yml")) {
-      basePath = path.join(basePath, ".yarnrc.yml");
+    let yarnBasePath = basePath;
+    if (!yarnBasePath.endsWith(".yarnrc.yml")) {
+      yarnBasePath = path.join(yarnBasePath, ".yarnrc.yml");
     }
 
-    super(basePath, createIfNotExists);
-    this.npmConfig = new NpmConfig(basePath, createIfNotExists);
+    super(yarnBasePath, createIfNotExists);
+
+    let npmBasePath = basePath;
+    if (npmBasePath.endsWith('.yarnrc.yml')) {
+      npmBasePath = path.join(npmBasePath.substring(0, npmBasePath.length - ".yarnrc.yml".length), ".npmrc");
+    }
+    this.npmConfig = new NpmConfig(npmBasePath, createIfNotExists);
   }
 
   getRegistries() {
