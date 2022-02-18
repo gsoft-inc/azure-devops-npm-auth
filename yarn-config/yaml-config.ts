@@ -30,7 +30,6 @@ class YamlConfig {
 
     save = () => fs.writeFileSync(this.filePath, yaml.dump(this.config));
 
-    // load = () => this.config = ini.parse(fs.readFileSync(this.filePath, "utf8"));
     load = () => this.config = yaml.load(fs.readFileSync(this.filePath, "utf8")) as YamlSettings;
 }
 
