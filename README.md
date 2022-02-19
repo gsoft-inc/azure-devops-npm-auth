@@ -57,6 +57,16 @@ You also need to add the required API permissions to have '`Azure DevOps user_im
 
 ![aad api permissions](https://imgur.com/aVd51d0.png)
 
+### register-azure-devops-npm-auth.ps1
+
+To automate the creation of the above AD app registration in *your* AD tenant:
+
+1. Ensure you have installed [azure-cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+2. Open a powershell core prompt (minimum version 6.1)
+3. Run `./register-azure-devops-npm-auth.ps1 -Login -InfA Continue`
+
+This will open your default browser where you will need to login to Azure with credentials that has the Azure AD 'Global administrator' RBAC role
+
 ### Continuous integration
 
 To disable authentication within CI environments add the `--ci` flag which skips authentication when the `TF_BUILD` environment variable is set (which is automatically set in Azure DevOps build pipelines):
