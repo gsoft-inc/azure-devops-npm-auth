@@ -2,15 +2,16 @@ import * as chalk from "chalk";
 import { MsoIssuer, MsoDeviceCodeClientMedata } from "./authentication";
 import { custom, Client } from "openid-client";
 import { UserNpmConfig, ProjectNpmConfig } from "./npm-config";
+import { UserYarnConfig, ProjectYarnConfig } from "./yarn-config";
 import { resolve } from "path";
+import * as fs from 'fs';
+import * as path from 'path';
 
 const AZDEVOPS_RESOURCE_ID = "499b84ac-1321-427f-aa17-267ca6975798";
 const AZDEVOPS_AUTH_CLIENT_ID = "f9d5fef7-a410-4582-bb27-68a319b1e5a1";
 const AZDEVOPS_AUTH_TENANT_ID = "common";
 
 const CI_DEFAULT_ENV_VARIABLE_NAME = "TF_BUILD";
-
-const userNpmConfig = new UserNpmConfig();
 
 export function inCI(ciInfo: boolean | string) {
   if (!ciInfo) {
@@ -38,8 +39,12 @@ async function run(
     return;
   }
   const resolvedProjectBasePath = projectBasePath ? resolve(projectBasePath) : process.cwd();
+  const isProjectUsingYarnv2 = fs.existsSync(path.join(resolvedProjectBasePath, ".yarnrc.yml"));
 
-  for (const registry of getRegistries(resolvedProjectBasePath)) {
+  const userConfig = !isProjectUsingYarnv2 ? new UserNpmConfig() : new UserYarnConfig();
+  const projectConfig = !isProjectUsingYarnv2 ? new ProjectNpmConfig(resolvedProjectBasePath) : new ProjectYarnConfig(resolvedProjectBasePath);
+
+  for (const registry of getRegistries(userConfig, projectConfig)) {
     console.log(chalk.green(`Found registry ${registry}`));
 
     const issuer = await MsoIssuer.discover(tenantId);
@@ -53,7 +58,7 @@ async function run(
     }
 
     let tokenSet;
-    const refreshToken = userNpmConfig.getRegistryRefreshToken(registry);
+    const refreshToken = userConfig.getRegistryRefreshToken(registry);
     if (refreshToken) {
       try {
         console.log("Trying to use refresh token...");
@@ -77,8 +82,8 @@ async function run(
     }
 
     // Update user npm config with tokens
-    userNpmConfig.setRegistryAuthToken(registry, tokenSet.access_token);
-    userNpmConfig.setRegistryRefreshToken(registry, tokenSet.refresh_token);
+    userConfig.setRegistryAuthToken(registry, tokenSet.access_token);
+    userConfig.setRegistryRefreshToken(registry, tokenSet.refresh_token);
 
     console.log(
       chalk.green(`Done! You can now install packages from ${registry} \n`)
@@ -100,10 +105,10 @@ async function startDeviceCodeFlow(client: Client) {
   return await handle.poll();
 }
 
-function getRegistries(projectBasePath: string) {
+function getRegistries(userConfig: UserNpmConfig | UserYarnConfig, projectConfig: ProjectNpmConfig | ProjectYarnConfig) {
   // Registries should be set on project level but fallback to user defined.
-  const projectRegistries = new ProjectNpmConfig(projectBasePath).getRegistries();
-  const userRegistries = userNpmConfig.getRegistries();
+  const projectRegistries = projectConfig.getRegistries();
+  const userRegistries = userConfig.getRegistries();
   const registries = (projectRegistries.length !== 0
     ? projectRegistries
     : userRegistries
