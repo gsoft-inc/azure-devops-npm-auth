@@ -1,6 +1,6 @@
 {
   "name": "azure-devops-npm-auth",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Authentication utility for private NPM registries hosted in Azure DevOps.",
   "keywords": [
     "azure",
