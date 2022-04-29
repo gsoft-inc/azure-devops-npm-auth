@@ -42,7 +42,7 @@ If you want to use your own Azure Active Directory application, it's possible to
 
 ```javascript
   "scripts": {
-    "preinstall": "azure-devops-npm-auth --client_id='xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' --tenant_id='xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'"
+    "preinstall": "azure-devops-npm-auth --client_id=xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --tenant_id=xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ...
   },
 ```
