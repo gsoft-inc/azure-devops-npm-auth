@@ -42,7 +42,7 @@ If you want to use your own Azure Active Directory application, it's possible to
 
 ```javascript
   "scripts": {
-    "preinstall": "azure-devops-npm-auth --client_id='xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' --tenant_id='xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'"
+    "preinstall": "npx azure-devops-npm-auth --client_id=xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --tenant_id=xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ...
   },
 ```
@@ -72,14 +72,14 @@ This will open your default browser where you will need to login to Azure with c
 To disable authentication within CI environments add the `--ci` flag which skips authentication when the `TF_BUILD` environment variable is set (which is automatically set in Azure DevOps build pipelines):
 ```javascript
   "scripts": {
-    "preinstall": "azure-devops-npm-auth --ci"
+    "preinstall": "npx azure-devops-npm-auth --ci"
     ...
   },
 ```
 It's also possible to specify a custom environment variable:
 ```javascript
   "scripts": {
-    "preinstall": "azure-devops-npm-auth --ci=MY_CUSTOM_VARIABLE"
+    "preinstall": "npx azure-devops-npm-auth --ci=MY_CUSTOM_VARIABLE"
     ...
   },
 ```
@@ -90,7 +90,7 @@ You can pass in a path to customize the directory to look in for the project's .
 
 ```javascript
   "scripts": {
-    "preinstall": "azure-devops-npm-auth --project_base_path=./configs"
+    "preinstall": "npx azure-devops-npm-auth --project_base_path=./configs"
     ...
   },
 ```

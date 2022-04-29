@@ -128,7 +128,7 @@ process {
         Write-Host '******************* Summary: start ******************************'
         Write-Host "App/Client ID: $($app.appId)"
         Write-Host "AD Tenant ID: $tenantId"
-        Write-Host ("To authenticate to Azure npm feed: azure-devops-npm-auth --client_id='{0}' --tenant_id='{1}'" -f $app.appId, $tenantId) -ForegroundColor Yellow
+        Write-Host ("To authenticate to Azure npm feed: azure-devops-npm-auth --client_id={0} --tenant_id={1}" -f $app.appId, $tenantId) -ForegroundColor Yellow
         Write-Host '******************* Summary: end ********************************'
 
     }
