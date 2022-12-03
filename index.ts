@@ -11,7 +11,7 @@ import * as path from 'path';
 const AZDEVOPS_AUTH_TENANT_HEADER = "x-vss-resourcetenant";
 
 const AZDEVOPS_RESOURCE_ID = "499b84ac-1321-427f-aa17-267ca6975798";
-const AZDEVOPS_AUTH_CLIENT_ID = "f9d5fef7-a410-4582-bb27-68a319b1e5a1";
+const AZDEVOPS_AUTH_CLIENT_ID = "872cd9fa-d31f-45e0-9eab-6e460a02d1f1";
 const AZDEVOPS_AUTH_TENANT_ID = "common";
 
 const CI_DEFAULT_ENV_VARIABLE_NAME = "TF_BUILD";
