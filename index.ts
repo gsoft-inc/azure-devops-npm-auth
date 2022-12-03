@@ -5,7 +5,10 @@ import { UserNpmConfig, ProjectNpmConfig } from "./npm-config";
 import { UserYarnConfig, ProjectYarnConfig } from "./yarn-config";
 import { resolve } from "path";
 import * as fs from 'fs';
+import * as https from 'https';
 import * as path from 'path';
+
+const AZDEVOPS_AUTH_TENANT_HEADER = "x-vss-resourcetenant";
 
 const AZDEVOPS_RESOURCE_ID = "499b84ac-1321-427f-aa17-267ca6975798";
 const AZDEVOPS_AUTH_CLIENT_ID = "f9d5fef7-a410-4582-bb27-68a319b1e5a1";
@@ -29,10 +32,20 @@ export function inCI(ciInfo: boolean | string) {
   return true;
 }
 
+async function getRegistryTenantId(url: string): Promise<string | undefined> {
+  return new Promise((resolve, _reject) => {
+    https.get(url, (resp) => {
+      const tenantIdHeader = resp.headers[AZDEVOPS_AUTH_TENANT_HEADER];
+      const tenantId = Array.isArray(tenantIdHeader) ? tenantIdHeader[0] : tenantIdHeader;
+      resolve(tenantId);
+    });
+  });
+}
+
 async function run(
   clientId = AZDEVOPS_AUTH_CLIENT_ID,
-  tenantId = AZDEVOPS_AUTH_TENANT_ID,
   ciInfo: boolean | string,
+  tenantId?: string,
   projectBasePath?: string
 ) {
   if (inCI(ciInfo)) {
@@ -47,7 +60,9 @@ async function run(
   for (const registry of getRegistries(userConfig, projectConfig)) {
     console.log(chalk.green(`Found registry ${registry}`));
 
-    const issuer = await MsoIssuer.discover(tenantId);
+    const registryTenantId = tenantId ?? (await getRegistryTenantId(registry)) ?? AZDEVOPS_AUTH_TENANT_ID;
+
+    const issuer = await MsoIssuer.discover(registryTenantId);
     const client = new issuer.Client(new MsoDeviceCodeClientMedata(clientId));
 
     // Set timeout to 5s to workaround issue #18
