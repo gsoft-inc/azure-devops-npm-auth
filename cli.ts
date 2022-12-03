@@ -11,4 +11,4 @@ const args = require("minimist")(process.argv.slice(2), {
   }
 });
 
-(async () => await run(args.client_id, args.tenant_id, args.ci, args.pbp))();
+(async () => await run(args.client_id, args.ci, args.tenant_id, args.pbp))();
