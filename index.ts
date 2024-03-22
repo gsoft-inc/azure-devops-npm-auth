@@ -33,7 +33,8 @@ async function run(
   clientId = AZDEVOPS_AUTH_CLIENT_ID,
   tenantId = AZDEVOPS_AUTH_TENANT_ID,
   ciInfo: boolean | string,
-  projectBasePath?: string
+  projectBasePath?: string,
+  resourceId = AZDEVOPS_RESOURCE_ID
 ) {
   if (inCI(ciInfo)) {
     return;
@@ -67,18 +68,18 @@ async function run(
         switch (exception.error) {
           case "invalid_grant":
             console.log(chalk.yellow("Refresh token is invalid or expired."));
-            tokenSet = await startDeviceCodeFlow(client);
+            tokenSet = await startDeviceCodeFlow(client, resourceId);
             break;
           case "interaction_required":
             console.log(chalk.yellow("Interaction required."));
-            tokenSet = await startDeviceCodeFlow(client);
+            tokenSet = await startDeviceCodeFlow(client, resourceId);
             break;
           default:
             throw exception;
         }
       }
     } else {
-      tokenSet = await startDeviceCodeFlow(client);
+      tokenSet = await startDeviceCodeFlow(client, resourceId);
     }
 
     // Update user npm config with tokens
@@ -91,12 +92,12 @@ async function run(
   }
 }
 
-async function startDeviceCodeFlow(client: Client) {
+async function startDeviceCodeFlow(client: Client, resourceId: string) {
   console.log(chalk.green("Launching device code authentication..."));
 
   // Make sure to include 'offline_access' scope to receive refresh token.
   const handle = await client.deviceAuthorization({
-    scope: `${AZDEVOPS_RESOURCE_ID}/.default offline_access`
+    scope: `${resourceId}/.default offline_access`
   });
 
   console.log(
